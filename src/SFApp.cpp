@@ -9,19 +9,29 @@ SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), is_running(true), sf_w
   auto player_pos = Point2(canvas_w, 88.0f);
   player->SetPosition(player_pos);
 
-  const int number_of_aliens = 10;
-  for(int i=0; i<number_of_aliens; i++) {
+ for(int j=0; j<5; j++) {
+  auto coin = make_shared<SFAsset>(SFASSET_COIN, sf_window);
+  auto pos  = Point2((canvas_w/5)*j, 100);
+  coin->SetPosition(pos);
+  coins.push_back(coin);
+}
+/*
+ for(int k=0; k<5; k++) {
+  auto wall = make_shared<SFAsset>(SFASSET_WALLS, sf_window);
+  auto pos  = Point2((canvas_w/5)*k, 200);
+  wall->SetPosition(pos);
+  walls.push_back(wall);
+}
+*/
+
+  for(int i=0; i<4; i++) {
     // place an alien at width/number_of_aliens * i
     auto alien = make_shared<SFAsset>(SFASSET_ALIEN, sf_window);
-    auto pos   = Point2((canvas_w/number_of_aliens) * i, 200.0f);
+    auto pos   = Point2((canvas_w/4) * i, 400.0f);
     alien->SetPosition(pos);
     aliens.push_back(alien);
   }
-
-  auto coin = make_shared<SFAsset>(SFASSET_COIN, sf_window);
-  auto pos  = Point2((canvas_w/4), 100);
-  coin->SetPosition(pos);
-  coins.push_back(coin);
+  
 }
 
 SFApp::~SFApp() {
@@ -47,6 +57,14 @@ void SFApp::OnEvent(SFEvent& event) {
   case SFEVENT_PLAYER_RIGHT:
     player->GoEast();
     break;
+
+  case SFEVENT_PLAYER_UP:
+    player->GoNorth();
+    break;
+  case SFEVENT_PLAYER_DOWN:
+    player->GoSouth();
+    break;
+
   case SFEVENT_FIRE:
     fire ++;
     FireProjectile();
@@ -66,29 +84,44 @@ int SFApp::OnExecute() {
 }
 
 void SFApp::OnUpdateWorld() {
-  // Update projectile positions
+  //Update projectile positions
   for(auto p: projectiles) {
     p->GoNorth();
   }
 
-  for(auto c: coins) {
-    c->GoNorth();
-  }
+
+//Detect collisions between player and wall
+  for(auto w : walls) {
+    if(player->CollidesWith(w)){
+      player->HandleCollision();
+      w->HandleCollision();
+      player->GoEast();
+    }
+}
 
   // Update enemy positions
   for(auto a : aliens) {
     // do something here
   }
 
-  // Detect collisions
-  for(auto p : projectiles) {
+  // Detect collisions between player and aliens
     for(auto a : aliens) {
-      if(p->CollidesWith(a)) {
-        p->HandleCollision();
+      if(player->CollidesWith(a)) {
+        player->HandleCollision();
         a->HandleCollision();
+        cout <<"GAME OVER"<< endl;
       }
     }
-  }
+
+  //Detect collisions with coins
+  for(auto c: coins) {
+    
+      if(player->CollidesWith(c)) {
+        player->HandleCollision();
+        c->HandleCollision();
+      }
+    }
+  
 
   // remove dead aliens (the long way)
   list<shared_ptr<SFAsset>> tmp;
@@ -99,6 +132,15 @@ void SFApp::OnUpdateWorld() {
   }
   aliens.clear();
   aliens = list<shared_ptr<SFAsset>>(tmp);
+
+  // remove coins once collected
+  for(auto c : coins) {
+    if(c->IsAlive()) {
+      tmp.push_back(c);
+    }
+  }
+  coins.clear();
+  coins = list<shared_ptr<SFAsset>>(tmp);
 }
 
 void SFApp::OnRender() {
@@ -107,16 +149,13 @@ void SFApp::OnRender() {
   // draw the player
   player->OnRender();
 
-  for(auto p: projectiles) {
-    if(p->IsAlive()) {p->OnRender();}
-  }
 
   for(auto a: aliens) {
     if(a->IsAlive()) {a->OnRender();}
   }
 
   for(auto c: coins) {
-    c->OnRender();
+    if(c->IsAlive()) {c->OnRender();}
   }
 
   // Switch the off-screen buffer to be on-screen

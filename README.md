@@ -40,3 +40,4 @@ under the terms of the [CPL 1.0](http://opensource.org/licenses/cpl1.0.php).
 
 The event system is based on [Libsigc++](http://libsigc.sourceforge.net/)
 and is used under the [LGPL](http://www.gnu.org/copyleft/lgpl.html).
+# StarshipFontana

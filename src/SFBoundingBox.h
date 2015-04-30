@@ -1,6 +1,5 @@
 #ifndef SFBOUNDINGBOX_H
 #define SFBOUNDINGBOX_H
-
 #include <memory>
 #include <utility>
 #include <ostream>

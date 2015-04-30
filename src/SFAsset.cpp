@@ -1,4 +1,5 @@
 #include "SFAsset.h"
+#include <iostream>
 
 int SFAsset::SFASSETID=0;
 
@@ -13,11 +14,14 @@ SFAsset::SFAsset(SFASSETTYPE type, std::shared_ptr<SFWindow> window): type(type)
     sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/projectile.png");
     break;
   case SFASSET_ALIEN:
-    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/alien.png");
+    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/wall.png");
+    break;
+  case SFASSET_WALLS:
+    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/wall.png");
     break;
   case SFASSET_COIN:
     sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/coin.png");
-    break;
+    break;  
   }
 
   if(!sprite) {
@@ -113,10 +117,16 @@ void SFAsset::GoEast() {
 }
 
 void SFAsset::GoNorth() {
-  Vector2 c = *(bbox->centre) + Vector2(0.0f, 1.0f);
+  Vector2 c = *(bbox->centre) + Vector2(0.0f, 2.0f);
   bbox->centre.reset();
   bbox->centre = make_shared<Vector2>(c);
 }
+
+void SFAsset::GoSouth() {
+  Vector2 c = *(bbox->centre) + Vector2(0.0f, -2.0f);
+  bbox->centre.reset();
+  bbox->centre = make_shared<Vector2>(c);
+} 
 
 bool SFAsset::CollidesWith(shared_ptr<SFAsset> other) {
   return bbox->CollidesWith(other->bbox);
@@ -134,8 +144,12 @@ bool SFAsset::IsAlive() {
   return (SFASSET_DEAD != type);
 }
 
+using namespace std;
 void SFAsset::HandleCollision() {
-  if(SFASSET_PROJECTILE == type || SFASSET_ALIEN == type) {
+  if(SFASSET_PLAYER == type || SFASSET_ALIEN == type) {
+    SetNotAlive();
+  }
+  if(SFASSET_PLAYER == type || SFASSET_COIN == type) {
     SetNotAlive();
   }
 }

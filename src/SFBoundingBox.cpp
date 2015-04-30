@@ -51,6 +51,7 @@ pair<float,float> SFBoundingBox::projectOntoAxis(const SFBoundingBox & b, enum A
 bool SFBoundingBox::CollidesWith(const shared_ptr<SFBoundingBox> b) {
   pair<float, float> a_x_proj = projectOntoAxis(*this, X),
     a_y_proj = projectOntoAxis(*this, Y),
+
     b_x_proj = projectOntoAxis(*b, X),
     b_y_proj = projectOntoAxis(*b, Y);
 
