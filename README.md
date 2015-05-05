@@ -19,24 +19,25 @@ your system.  The easiest way to compile is to use a command-line
 ```bash
 $ g++ -c src/*.cpp
 $ g++ -o starship *.o -lSDL2 -lSDL2_image
+$ ./StarshipFontana
 ```
-
-which will produce an executable file called "starship" in the
-top-level directory.  To execute this file do the following
-
-`$ ./starship`
  
 from the top-level directory.  The game will expect to find the
 `assets` directory under its current working directory.
 
 ## Issues ##
 I think the SDL port has introduced some bounding box collision issues.
+The walls and aliens will sometimes appear but never together simultaneously, and causes the run alot slower than usual. Therefore that area of code has been commented out.
+
+Unable to upload to github as I kept getting unauthorized and denied access when I tried to git push origin master.
+https://github.com/missleslie/StarshipFontana
 
 ## Credits ##
 The sprites in this game come directly from 
 [SpriteLib](http://www.widgetworx.com/widgetworx/portfolio/spritelib.html) and are used
 under the terms of the [CPL 1.0](http://opensource.org/licenses/cpl1.0.php).
 
+Wall sprites I created by using 'Paint' on Windows.
 
 The event system is based on [Libsigc++](http://libsigc.sourceforge.net/)
 and is used under the [LGPL](http://www.gnu.org/copyleft/lgpl.html).
